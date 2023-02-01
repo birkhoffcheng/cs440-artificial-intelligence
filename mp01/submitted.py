@@ -92,7 +92,10 @@ def variance_from_distribution(P):
     Outputs:
     var (float) - the variance of X
     '''
-    raise RuntimeError('You need to write this part!')
+    mu = mean_from_distribution(P)
+    var = 0
+    for i, p in enumerate(P):
+        var += (i - mu) ** 2 * p
     return var
 
 def covariance_from_distribution(P):
