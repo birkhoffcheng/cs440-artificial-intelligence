@@ -79,7 +79,9 @@ def mean_from_distribution(P):
     Outputs:
     mu (float) - the mean of X
     '''
-    raise RuntimeError('You need to write this part!')
+    mu = 0
+    for i, p in enumerate(P):
+        mu += i * p
     return mu
 
 def variance_from_distribution(P):
