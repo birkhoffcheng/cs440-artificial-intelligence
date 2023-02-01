@@ -20,13 +20,10 @@ def joint_distribution_of_word_counts(texts, word0, word1):
       X0 is the number of times that word1 occurs in a given text,
       X1 is the number of times that word2 occurs in the same text.
     '''
-    word0 = word0.lower()
-    word1 = word1.lower()
     ntexts = len(texts)
     count0 = [0] * ntexts
     count1 = [0] * ntexts
     for i in range(ntexts):
-        texts[i] = [w.lower() for w in texts[i]]
         count0[i] = texts[i].count(word0)
         count1[i] = texts[i].count(word1)
     Pjoint = np.zeros((max(count0) + 1, max(count1) + 1))
