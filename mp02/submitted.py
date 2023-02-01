@@ -21,7 +21,13 @@ def create_frequency_table(train):
     frequency (dict of Counters)
         - frequency[y][x] = number of tokens of word x in texts of class y
     '''
-    raise RuntimeError("You need to write this part!")
+    frequency = {}
+    for cla in train:
+        ctr = Counter()
+        for text in train[cla]:
+            ctr.update(text)
+        frequency[cla] = ctr
+    return frequency
 
 def remove_stopwords(frequency):
     '''
