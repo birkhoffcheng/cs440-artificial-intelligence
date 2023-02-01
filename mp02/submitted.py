@@ -40,7 +40,11 @@ def remove_stopwords(frequency):
         - nonstop[y][x] = frequency of word x in texts of class y,
           but only if x is not a stopword.
     '''
-    raise RuntimeError("You need to write this part!")
+    for cla in frequency:
+        for w in stopwords:
+            if frequency[cla].get(w, None) is not None:
+                del frequency[cla][w]
+    return frequency
 
 def laplace_smoothing(nonstop, smoothness):
     '''
