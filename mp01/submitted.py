@@ -20,7 +20,19 @@ def joint_distribution_of_word_counts(texts, word0, word1):
       X0 is the number of times that word1 occurs in a given text,
       X1 is the number of times that word2 occurs in the same text.
     '''
-    raise RuntimeError('You need to write this part!')
+    word0 = word0.lower()
+    word1 = word1.lower()
+    ntexts = len(texts)
+    count0 = [0] * ntexts
+    count1 = [0] * ntexts
+    for i in range(ntexts):
+        texts[i] = [w.lower() for w in texts[i]]
+        count0[i] = texts[i].count(word0)
+        count1[i] = texts[i].count(word1)
+    Pjoint = np.zeros((max(count0) + 1, max(count1) + 1))
+    for i in range(ntexts):
+        Pjoint[count0[i], count1[i]] += 1
+    Pjoint /= ntexts
     return Pjoint
 
 def marginal_distribution_of_word_counts(Pjoint, index):
@@ -29,7 +41,7 @@ def marginal_distribution_of_word_counts(Pjoint, index):
     Pjoint (numpy array) - Pjoint[m,n] = P(X0=m,X1=n), where
       X0 is the number of times that word1 occurs in a given text,
       X1 is the number of times that word2 occurs in the same text.
-    index (0 or 1) - which variable to retain (marginalize the other) 
+    index (0 or 1) - which variable to retain (marginalize the other)
 
     Output:
     Pmarginal (numpy array) - Pmarginal[x] = P(X=x), where
@@ -38,7 +50,7 @@ def marginal_distribution_of_word_counts(Pjoint, index):
     '''
     raise RuntimeError('You need to write this part!')
     return Pmarginal
-    
+
 def conditional_distribution_of_word_counts(Pjoint, Pmarginal):
     '''
     Parameters:
@@ -47,7 +59,7 @@ def conditional_distribution_of_word_counts(Pjoint, Pmarginal):
       X1 is the number of times that word1 occurs in the same text.
     Pmarginal (numpy array) - Pmarginal[m] = P(X0=m)
 
-    Outputs: 
+    Outputs:
     Pcond (numpy array) - Pcond[m,n] = P(X1=n|X0=m)
     '''
     raise RuntimeError('You need to write this part!')
@@ -57,7 +69,7 @@ def mean_from_distribution(P):
     '''
     Parameters:
     P (numpy array) - P[n] = P(X=n)
-    
+
     Outputs:
     mu (float) - the mean of X
     '''
@@ -68,7 +80,7 @@ def variance_from_distribution(P):
     '''
     Parameters:
     P (numpy array) - P[n] = P(X=n)
-    
+
     Outputs:
     var (float) - the variance of X
     '''
@@ -79,7 +91,7 @@ def covariance_from_distribution(P):
     '''
     Parameters:
     P (numpy array) - P[m,n] = P(X0=m,X1=n)
-    
+
     Outputs:
     covar (float) - the covariance of X0 and X1
     '''
@@ -100,4 +112,3 @@ def expectation_of_a_function(P, f):
     '''
     raise RuntimeError('You need to write this part!')
     return expected
-    
