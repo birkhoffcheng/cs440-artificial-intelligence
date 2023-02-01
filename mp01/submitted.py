@@ -48,8 +48,8 @@ def marginal_distribution_of_word_counts(Pjoint, index):
       if index==0, then X is X0
       if index==1, then X is X1
     '''
-    raise RuntimeError('You need to write this part!')
-    return Pmarginal
+    index ^= 1
+    return np.sum(Pjoint, axis=index)
 
 def conditional_distribution_of_word_counts(Pjoint, Pmarginal):
     '''
