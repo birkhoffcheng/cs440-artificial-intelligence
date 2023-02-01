@@ -126,5 +126,8 @@ def expectation_of_a_function(P, f):
     Output:
     expected (float) - the expected value, E[f(X0,X1)]
     '''
-    raise RuntimeError('You need to write this part!')
+    expected = 0
+    for i in range(P.shape[0]):
+        for j in range(P.shape[1]):
+            expected += f(i, j) * P[i, j]
     return expected
