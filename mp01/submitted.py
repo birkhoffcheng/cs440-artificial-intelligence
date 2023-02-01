@@ -62,7 +62,13 @@ def conditional_distribution_of_word_counts(Pjoint, Pmarginal):
     Outputs:
     Pcond (numpy array) - Pcond[m,n] = P(X1=n|X0=m)
     '''
-    raise RuntimeError('You need to write this part!')
+    Pcond = np.zeros(Pjoint.shape)
+    for i in range(Pjoint.shape[0]):
+        for j in range(Pjoint.shape[1]):
+            if Pmarginal[i] == 0:
+                Pcond[i, j] = np.nan
+            else:
+                Pcond[i, j] = Pjoint[i, j] / Pmarginal[i]
     return Pcond
 
 def mean_from_distribution(P):
