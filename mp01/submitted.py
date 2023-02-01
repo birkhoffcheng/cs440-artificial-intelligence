@@ -106,7 +106,12 @@ def covariance_from_distribution(P):
     Outputs:
     covar (float) - the covariance of X0 and X1
     '''
-    raise RuntimeError('You need to write this part!')
+    mux = mean_from_distribution(marginal_distribution_of_word_counts(P, 0))
+    muy = mean_from_distribution(marginal_distribution_of_word_counts(P, 1))
+    covar = 0
+    for i in range(P.shape[0]):
+        for j in range(P.shape[1]):
+            covar += (i - mux) * (j - muy) * P[i, j]
     return covar
 
 def expectation_of_a_function(P, f):
