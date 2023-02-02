@@ -62,7 +62,14 @@ def laplace_smoothing(nonstop, smoothness):
     Be careful that your vocabulary only counts words that occurred at least once
     in the training data for class y.
     '''
-    raise RuntimeError("You need to write this part!")
+    likelihood = {}
+    for cla in nonstop:
+        likelihood[cla] = {}
+        total = Counter(nonstop[cla]).total()
+        for w in nonstop[cla]:
+            likelihood[cla][w] = (nonstop[cla][w] + smoothness) / (total + smoothness * (len(nonstop[cla]) + 1))
+        likelihood[cla]['OOV'] = smoothness / (total + smoothness * (len(nonstop[cla]) + 1))
+    return likelihood
 
 def naive_bayes(texts, likelihood, prior):
     '''
