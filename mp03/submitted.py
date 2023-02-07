@@ -19,10 +19,16 @@ def k_nearest_neighbors(image, train_images, train_labels, k):
     neighbors - 1-D array of k images, the k nearest neighbors of image
     labels - 1-D array of k labels corresponding to the k images
     '''
-
-
-    raise RuntimeError('You need to write this part!')
-
+    distances = []
+    for i in range(len(train_images)):
+        diff = image - train_images[i]
+        diff = diff @ diff
+        distances.append((diff, i))
+    distances.sort(key=lambda x : x[0])
+    distances = distances[:k]
+    neighbors = np.array([train_images[i] for _, i in distances])
+    labels = np.array([train_labels[i] for _, i in distances])
+    return neighbors, labels
 
 def classify_devset(dev_images, train_images, train_labels, k):
     '''
@@ -36,7 +42,7 @@ def classify_devset(dev_images, train_images, train_labels, k):
     hypotheses (list) -one majority-vote labels for each of the M dev images
     scores (list) -number of nearest neighbors that voted for the majority class of each dev image
     '''
-    
+
     raise RuntimeError('You need to write this part!')
 
 
@@ -47,7 +53,7 @@ def confusion_matrix(hypotheses, references):
     references (list) - a list of the M correct labels
 
     Output:
-    confusions (list of lists, or 2d array) - confusions[m][n] is 
+    confusions (list of lists, or 2d array) - confusions[m][n] is
     the number of times reference class m was classified as
     hypothesis class n.
     accuracy (float) - the computed accuracy
