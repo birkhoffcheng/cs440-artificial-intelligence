@@ -63,5 +63,12 @@ def confusion_matrix(hypotheses, references):
     accuracy (float) - the computed accuracy
     f1(float) - the computed f1 score from the matrix
     '''
-
-    raise RuntimeError('You need to write this part!')
+    confusions = [[0, 0], [0, 0]]
+    for i in range(len(hypotheses)):
+        confusions[references[i]][hypotheses[i]] += 1
+    accuracy = (confusions[0][0] + confusions[1][1]) / (confusions[0][0] + confusions[0][1] + confusions[1][0] + confusions[1][1])
+    precision = confusions[1][1] / (confusions[1][1] + confusions[0][1])
+    recall = confusions[1][1] / (confusions[1][1] + confusions[1][0])
+    f1 = 2 / (1 / recall + 1 / precision)
+    confusions = np.array(confusions)
+    return confusions, accuracy, f1
