@@ -42,9 +42,13 @@ def classify_devset(dev_images, train_images, train_labels, k):
     hypotheses (list) -one majority-vote labels for each of the M dev images
     scores (list) -number of nearest neighbors that voted for the majority class of each dev image
     '''
-
-    raise RuntimeError('You need to write this part!')
-
+    hypotheses = []
+    scores = []
+    for image in dev_images:
+        neighbors, labels = k_nearest_neighbors(image, train_images, train_labels, k)
+        hypotheses.append(np.count_nonzero(labels == True) > np.count_nonzero(labels == False))
+        scores.append(np.count_nonzero(labels == hypotheses[-1]))
+    return hypotheses, scores
 
 def confusion_matrix(hypotheses, references):
     '''
