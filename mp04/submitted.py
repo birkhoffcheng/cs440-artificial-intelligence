@@ -24,8 +24,9 @@ class NeuralNet(torch.nn.Module):
         """
         super().__init__()
         ################# Your Code Starts Here #################
-
-        raise NotImplementedError("You need to write this part!")
+        self.hidden = nn.Linear(2883, 128)
+        self.output = nn.Linear(128, 5)
+        self.relu = nn.ReLU()
         ################## Your Code Ends here ##################
 
     def forward(self, x):
@@ -39,9 +40,10 @@ class NeuralNet(torch.nn.Module):
             y:      an (N, output_size) tensor of output from the network
         """
         ################# Your Code Starts Here #################
-
+        x = self.hidden(x)
+        x = self.relu(x)
+        y = self.output(x)
         return y
-        raise NotImplementedError("You need to write this part!")
         ################## Your Code Ends here ##################
 
 
@@ -64,7 +66,7 @@ def fit(train_dataloader, test_dataloader, epochs):
         loss_fn:            your selected loss function
         optimizer:          your selected optimizer
     """
-    
+
     # Create an instance of NeuralNet, don't modify this line.
     model = NeuralNet()
 
@@ -76,9 +78,8 @@ def fit(train_dataloader, test_dataloader, epochs):
     Please select an appropriate loss function from PyTorch torch.nn module.
     Please select an appropriate optimizer from PyTorch torch.optim module.
     """
-    loss_fn = None
-    optimizer = None
-    raise NotImplementedError("You need to write this part!")
+    loss_fn = nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     ################## Your Code Ends here ##################
 
 
@@ -114,8 +115,12 @@ def train(train_dataloader, model, loss_fn, optimizer):
     """
 
     ################# Your Code Starts Here #################
-
-    raise NotImplementedError("You need to write this part!")
+    for batch in train_dataloader:
+        optimizer.zero_grad()
+        outputs = model(batch[0])
+        loss = loss_fn(outputs, batch[1])
+        loss.backward()
+        optimizer.step()
     ################## Your Code Ends here ##################
 
 
