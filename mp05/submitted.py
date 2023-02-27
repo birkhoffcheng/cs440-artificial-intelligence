@@ -35,19 +35,22 @@ def bfs(maze):
     if start in maze.waypoints:
         return [start]
     q.put(start)
+    frontier = {start}
     paths[start] = [start]
     while not q.empty():
         node = q.get()
+        frontier.remove(node)
         explored.add(node)
         path_to_node = paths[node]
         neighbors = maze.neighbors(node[0], node[1])
         for neighbor in neighbors:
-            if neighbor in explored:
+            if neighbor in explored or neighbor in frontier:
                 continue
             paths[neighbor] = path_to_node + [neighbor]
             if neighbor in maze.waypoints:
                 return paths[neighbor]
             q.put(neighbor)
+            frontier.add(neighbor)
 
     return []
 
@@ -72,19 +75,22 @@ def astar_single(maze):
     waypoint = maze.waypoints[0]
     start_prio = manhattan_distance(start, waypoint)
     q.put((start_prio, start))
+    frontier = {start}
     paths[start] = [start]
     while not q.empty():
         prio, node = q.get()
+        frontier.remove(node)
         explored.add(node)
         path_to_node = paths[node]
         neighbors = maze.neighbors(node[0], node[1])
         for neighbor in neighbors:
-            if neighbor in explored:
+            if neighbor in explored or neighbor in frontier:
                 continue
             paths[neighbor] = path_to_node + [neighbor]
             if neighbor in maze.waypoints:
                 return paths[neighbor]
             q.put((len(paths[neighbor]) - 1 + manhattan_distance(neighbor, waypoint), neighbor))
+            frontier.add(neighbor)
 
     return []
 
