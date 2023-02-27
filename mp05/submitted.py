@@ -17,6 +17,7 @@ files and classes when code is run, so be careful to not modify anything else.
 # to the positions of the path taken by your search algorithm.
 # maze is a Maze object based on the maze from the file specified by input filename
 # searchMethod is the search method specified by --method flag (bfs,dfs,astar,astar_multi)
+import queue
 
 def bfs(maze):
     """
@@ -27,6 +28,26 @@ def bfs(maze):
     @return path: a list of tuples containing the coordinates of each state in the computed path
     """
     #TODO: Implement bfs function
+    paths = {}
+    q = queue.SimpleQueue()
+    explored = set()
+    start = maze.start
+    if start in maze.waypoints:
+        return [start]
+    q.put(start)
+    paths[start] = [start]
+    while not q.empty():
+        node = q.get()
+        explored.add(node)
+        path_to_node = paths[node]
+        neighbors = maze.neighbors(node[0], node[1])
+        for neighbor in neighbors:
+            if neighbor in explored:
+                continue
+            paths[neighbor] = path_to_node + [neighbor]
+            if neighbor in maze.waypoints:
+                return paths[neighbor]
+            q.put(neighbor)
 
     return []
 
