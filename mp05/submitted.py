@@ -51,6 +51,9 @@ def bfs(maze):
 
     return []
 
+def manhattan_distance(src, dst):
+    return abs(src[0] - dst[0]) + abs(src[1] - dst[1])
+
 def astar_single(maze):
     """
     Runs A star for part 2 of the assignment.
@@ -60,6 +63,28 @@ def astar_single(maze):
     @return path: a list of tuples containing the coordinates of each state in the computed path
     """
     #TODO: Implement astar_single
+    paths = {}
+    q = queue.PriorityQueue()
+    explored = set()
+    start = maze.start
+    if start in maze.waypoints:
+        return [start]
+    waypoint = maze.waypoints[0]
+    start_prio = manhattan_distance(start, waypoint)
+    q.put((start_prio, start))
+    paths[start] = [start]
+    while not q.empty():
+        prio, node = q.get()
+        explored.add(node)
+        path_to_node = paths[node]
+        neighbors = maze.neighbors(node[0], node[1])
+        for neighbor in neighbors:
+            if neighbor in explored:
+                continue
+            paths[neighbor] = path_to_node + [neighbor]
+            if neighbor in maze.waypoints:
+                return paths[neighbor]
+            q.put((len(paths[neighbor]) - 1 + manhattan_distance(neighbor, waypoint), neighbor))
 
     return []
 
