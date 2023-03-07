@@ -95,8 +95,37 @@ def alphabeta(side, board, flags, depth, alpha=-math.inf, beta=math.inf):
 		flags (list of flags): list of flags, used by generateMoves and makeMove
 		depth (int >=0): depth of the search (number of moves)
 	'''
-	raise NotImplementedError("you need to write this!")
-
+	moves = [move for move in generateMoves(side, board, flags)]
+	if depth == 0 or len(moves) == 0:
+		return evaluate(board), [], {}
+	value = 0
+	moveList = None
+	moveTree = {}
+	if not side:
+		value = -math.inf
+		for move in moves:
+			newside, newboard, newflags = makeMove(side, board, move[0], move[1], flags, move[2])
+			move_value, move_list, move_subtree = alphabeta(newside, newboard, newflags, depth - 1, alpha, beta)
+			moveTree[encode(*move)] = move_subtree
+			if move_value > value:
+				value = move_value
+				moveList = [move] + move_list
+			alpha = max(alpha, value)
+			if value >= beta:
+				break
+	else:
+		value = math.inf
+		for move in moves:
+			newside, newboard, newflags = makeMove(side, board, move[0], move[1], flags, move[2])
+			move_value, move_list, move_subtree = alphabeta(newside, newboard, newflags, depth - 1, alpha, beta)
+			moveTree[encode(*move)] = move_subtree
+			if move_value < value:
+				value = move_value
+				moveList = [move] + move_list
+			beta = min(beta, value)
+			if value <= alpha:
+				break
+	return value, moveList, moveTree
 
 def stochastic(side, board, flags, depth, breadth, chooser):
 	'''
