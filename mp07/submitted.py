@@ -44,6 +44,11 @@ def standardize_variables(nonstandard_rules):
 			ctr += 1
 	return standardized_rules, variables
 
+def replace(l, elem_from, elem_to):
+	for i in range(len(l)):
+		if l[i] == elem_from:
+			l[i] = elem_to
+
 def unify(query, datum, variables):
 	'''
 	@param query: proposition that you're trying to match.
@@ -92,7 +97,22 @@ def unify(query, datum, variables):
 	unify([...,True],[...,False],[...]) should always return None, None, regardless of the
 	  rest of the contents of the query or datum.
 	'''
-	raise RuntimeError("You need to write this part!")
+	if query[1] != datum[1] or query[3] != datum[3]:
+		return None, None
+	subs = {}
+	variables = set(variables)
+	unification = copy.deepcopy(query)
+	for i in range(len(unification)):
+		if unification[i] == datum[i]:
+			continue
+		if unification[i] in variables:
+			subs[unification[i]] = datum[i]
+			replace(unification, unification[i], datum[i])
+		elif datum[i] in variables:
+			subs[datum[i]] = unification[i]
+			replace(unification, datum[i], unification[i])
+		else:
+			return None, None
 	return unification, subs
 
 def apply(rule, goals, variables):
