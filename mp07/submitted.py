@@ -197,6 +197,12 @@ def apply(rule, goals, variables):
 		goalsets.append(goalset)
 	return applications, goalsets
 
+def convert_to_key(goals):
+	goals = copy.deepcopy(goals)
+	for i in range(len(goals)):
+		goals[i] = tuple(goals[i])
+	return frozenset(goals)
+
 def backward_chain(query, rules, variables):
 	'''
 	@param query: a proposition, you want to know if it is true
@@ -207,5 +213,19 @@ def backward_chain(query, rules, variables):
 	  that, when read in sequence, conclude by proving the truth of the query.
 	  If no proof of the query was found, you should return proof=None.
 	'''
-	raise RuntimeError("You need to write this part!")
-	return proof
+	q = queue.SimpleQueue()
+	proof_chains = {convert_to_key([query]): []}
+	q.put([query])
+	while q.qsize() > 0:
+		node = q.get()
+		node_chain = proof_chains[convert_to_key(node)]
+		for k in rules:
+			applications, goalsets = apply(rules[k], node, variables)
+			for i in range(len(applications)):
+				if len(goalsets[i]) == 0:
+					return [applications[i]] + node_chain
+				if convert_to_key(goalsets[i]) in proof_chains:
+					continue
+				proof_chains[convert_to_key(goalsets[i])] = [applications[i]] + node_chain
+				q.put(goalsets[i])
+	return None
