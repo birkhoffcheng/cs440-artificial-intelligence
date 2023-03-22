@@ -177,7 +177,24 @@ def apply(rule, goals, variables):
 		['bald eagle','is','hungry',False]
 	  ]
 	'''
-	raise RuntimeError("You need to write this part!")
+	applications = []
+	goalsets = []
+	for goal in goals:
+		unification, subs = unify(goal, rule['consequent'], variables)
+		if unification is None:
+			continue
+		application = {'consequent': unification}
+		antecedents = copy.deepcopy(rule['antecedents'])
+		for anteidx in range(len(antecedents)):
+			for tokidx in range(len(antecedents[anteidx])):
+				if subs.get(antecedents[anteidx][tokidx], None) is not None:
+					antecedents[anteidx][tokidx] = subs[antecedents[anteidx][tokidx]]
+		application['antecedents'] = antecedents
+		applications.append(application)
+		goalset = list(goals)
+		goalset.remove(goal)
+		goalset.extend(antecedents)
+		goalsets.append(goalset)
 	return applications, goalsets
 
 def backward_chain(query, rules, variables):
