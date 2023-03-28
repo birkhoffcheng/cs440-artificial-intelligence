@@ -10,10 +10,8 @@ use other non-standard modules (including nltk). Some modules that might be help
 already imported for you.
 '''
 
-import math
 from collections import defaultdict, Counter
 from math import log
-import numpy as np
 
 # define your epsilon for laplace smoothing here
 
@@ -53,7 +51,76 @@ def viterbi(train, test):
 	output: list of sentences with tags on the words
 			E.g., [[(word1, tag1), (word2, tag2)], [(word3, tag3), (word4, tag4)]]
 	'''
-	raise NotImplementedError("You need to write this part!")
+	tags_words = defaultdict(Counter)
+	tag_pairs = defaultdict(Counter)
+	tags_count = Counter()
+
+	# record counts of tags, tag->word emissions, tag transitions
+	for sentence in train:
+		for t in range(1, len(sentence)):
+			word, tag = sentence[t]
+			_, prev_tag = sentence[t - 1]
+			tags_count[tag] += 1
+			tags_words[tag][word] += 1
+			tag_pairs[prev_tag][tag] += 1
+
+	# transition and emission probabilities
+	transition_matrix = defaultdict(dict)
+	emission_prob = defaultdict(dict)
+	transition_smoothness = 0.00001
+	emission_smoothness = 0.00001
+	num_tags = len(tags_count)
+
+	for tag in tag_pairs:
+		for next_tag in tags_count:
+			transition_matrix[tag][next_tag] = log((tag_pairs[tag][next_tag] + transition_smoothness) / (tag_pairs[tag].total() + transition_smoothness * (num_tags + 1)))
+
+	for tag in tags_words:
+		for word in tags_words[tag]:
+			emission_prob[tag][word] = log((tags_words[tag][word] + emission_smoothness) / (tags_words[tag].total() + emission_smoothness * (num_tags + 1)))
+
+	predictions = []
+	for sentence in test:
+		# Initialization
+		prediction = []
+		trellis = [None] * len(sentence)
+		trellis[0] = {tag: (transition_matrix['START'][tag], tag) for tag in tags_count}
+
+		# Iteration: construct trellis
+		for t in range(1, len(sentence)):
+			word = sentence[t]
+			trellis[t] = {}
+			for tag in tags_count:
+				max_tag_prob = float('-inf')
+				max_prev_tag = None
+				emission_probability = emission_prob[tag].get(word, log(emission_smoothness / (tags_count[tag] + emission_smoothness * (num_tags + 1))))
+				for prev_tag in transition_matrix:
+					if prev_tag == 'START':
+						continue
+					prob = trellis[t - 1][prev_tag][0] + transition_matrix[prev_tag][tag] + emission_probability
+					if prob > max_tag_prob:
+						max_tag_prob = prob
+						max_prev_tag = prev_tag
+				trellis[t][tag] = (max_tag_prob, max_prev_tag)
+
+		# Termination
+		max_tag_prob = float('-inf')
+		best_tag = None
+		for tag in trellis[-1]:
+			if trellis[-1][tag][0] > max_tag_prob:
+				max_tag_prob = trellis[-1][tag][0]
+				best_tag = tag
+
+		# Backtrack
+		for i in range(len(sentence) - 1, 0, -1):
+			prediction.append((sentence[i], best_tag))
+			best_tag = trellis[i][best_tag][1]
+
+		prediction.append(('START', 'START'))
+		prediction.reverse()
+		predictions.append(prediction)
+
+	return predictions
 
 
 def viterbi_ec(train, test):
