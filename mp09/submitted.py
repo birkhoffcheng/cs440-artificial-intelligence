@@ -304,7 +304,7 @@ def run_model():
 	model = build_model()
 
 	# Build optimizer
-	optimizer = build_optimizer(hparams["optimizer"], model.parameters(), hparams)
+	optimizer = build_optimizer(hparams["optimizer"], model.backbone.fc.parameters(), hparams)
 
 	# Build loss function
 	loss_fn = torch.nn.CrossEntropyLoss()
