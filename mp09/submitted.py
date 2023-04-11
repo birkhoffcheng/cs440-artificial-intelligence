@@ -290,11 +290,11 @@ def run_model():
 		model:	trained model
 	"""
 	# Load hyperparameters
-	hparams = {'optimizer': 'Adam', 'lr': 0.001, 'momentum': 0.9, 'batch_size': 64, 'epochs': 10, 'transform': get_preprocess_transform('train'), 'train_loader_params': {'batch_size': 64, 'shuffle': True}, 'test_loader_params': {'batch_size': 64, 'shuffle': False}}
+	hparams = {'optimizer': 'Adam', 'lr': 0.001, 'momentum': 0.9, 'batch_size': 64, 'epochs': 10, 'train_loader_params': {'batch_size': 64, 'shuffle': True}, 'test_loader_params': {'batch_size': 64, 'shuffle': False}}
 
 	# Build PyTorch dataset
-	train_dataset = build_dataset(['cifar10_batches/data_batch_1', 'cifar10_batches/data_batch_2', 'cifar10_batches/data_batch_3', 'cifar10_batches/data_batch_4', 'cifar10_batches/data_batch_5'], hparams["transform"])
-	test_dataset = build_dataset(['cifar10_batches/test_batch'], hparams["transform"])
+	train_dataset = build_dataset(['cifar10_batches/data_batch_1', 'cifar10_batches/data_batch_2', 'cifar10_batches/data_batch_3', 'cifar10_batches/data_batch_4', 'cifar10_batches/data_batch_5'], get_preprocess_transform('train'))
+	test_dataset = build_dataset(['cifar10_batches/test_batch'], get_preprocess_transform('test'))
 
 	# Build PyTorch dataloader
 	train_dataloader = build_dataloader(train_dataset, hparams["train_loader_params"])
