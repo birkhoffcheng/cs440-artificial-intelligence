@@ -290,7 +290,7 @@ def run_model():
 		model:	trained model
 	"""
 	# Load hyperparameters
-	hparams = {'optimizer': 'Adam', 'lr': 0.001, 'momentum': 0.9, 'batch_size': 64, 'epochs': 10, 'train_loader_params': {'batch_size': 64, 'shuffle': True}, 'test_loader_params': {'batch_size': 64, 'shuffle': False}}
+	hparams = {'optimizer': 'Adam', 'lr': 0.001, 'momentum': 0.9, 'batch_size': 64, 'epochs': 3, 'train_loader_params': {'batch_size': 64, 'shuffle': True}, 'test_loader_params': {'batch_size': 64, 'shuffle': False}}
 
 	# Build PyTorch dataset
 	train_dataset = build_dataset(['cifar10_batches/data_batch_1', 'cifar10_batches/data_batch_2', 'cifar10_batches/data_batch_3', 'cifar10_batches/data_batch_4', 'cifar10_batches/data_batch_5'], get_preprocess_transform('train'))
@@ -311,7 +311,7 @@ def run_model():
 
 	# Train model
 	for epoch in range(hparams["epochs"]):
-		print(f"Epoch {epoch} of {hparams['epochs']}")
+		print(f"Epoch {epoch + 1} of {hparams['epochs']}")
 		train(train_dataloader, model, loss_fn, optimizer)
 		test(test_dataloader, model)
 
