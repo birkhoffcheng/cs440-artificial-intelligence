@@ -136,7 +136,7 @@ def build_dataloader(dataset, loader_params):
 3. (a) Build a neural network class.
 """
 class FinetuneNet(torch.nn.Module):
-	def __init__(self):
+	def __init__(self, num_classes=10):
 		"""
 		Initialize your neural network here. Remember that you will be performing finetuning
 		in this network so follow these steps:
@@ -147,8 +147,11 @@ class FinetuneNet(torch.nn.Module):
 		"""
 		super().__init__()
 		################# Your Code Starts Here #################
-
-		raise NotImplementedError("You need to write this part!")
+		self.backbone = resnet18(pretrained=True)
+		self.backbone.load_state_dict(torch.load('resnet18.pt'))
+		for param in self.backbone.parameters():
+			param.requires_grad = False
+		self.backbone.fc = nn.Linear(self.backbone.fc.in_features, num_classes)
 		################## Your Code Ends here ##################
 
 	def forward(self, x):
@@ -162,8 +165,8 @@ class FinetuneNet(torch.nn.Module):
 			y:	an (N, output_size) tensor of output from the network
 		"""
 		################# Your Code Starts Here #################
-
-		raise NotImplementedError("You need to write this part!")
+		x = self.backbone(x)
+		return x
 		################## Your Code Ends here ##################
 
 
@@ -195,7 +198,13 @@ def build_optimizer(optim_type, model_params, hparams):
 	Outputs:
 		optimizer:		a PyTorch optimizer object to be used in training
 	"""
-	raise NotImplementedError("You need to write this part!")
+	if optim_type == "Adam":
+		optimizer = torch.optim.Adam(model_params, lr=hparams["lr"])
+	elif optim_type == "SGD":
+		optimizer = torch.optim.SGD(model_params, lr=hparams["lr"], momentum=hparams["momentum"])
+	else:
+		raise ValueError(f"Invalid optimizer type: {optim_type}")
+	return optimizer
 
 
 """
@@ -220,8 +229,12 @@ def train(train_dataloader, model, loss_fn, optimizer):
 	"""
 
 	################# Your Code Starts Here #################
-
-	raise NotImplementedError("You need to write this part!")
+	for data, label in train_dataloader:
+		optimizer.zero_grad()
+		outputs = model(data)
+		loss = loss_fn(outputs, label)
+		loss.backward()
+		optimizer.step()
 	################## Your Code Ends here ##################
 
 
@@ -249,10 +262,18 @@ def test(test_dataloader, model):
 	Outputs:
 		test_acc:			the output test accuracy (0.0 <= acc <= 1.0)
 	"""
+	model.eval()
+	correct = 0
+	total = 0
+	with torch.no_grad():
+		for images, labels in test_dataloader:
+			outputs = model(images)
+			_, predicted = torch.max(outputs.data, 1)
+			total += labels.size(0)
+			correct += (predicted == labels).sum().item()
 
-	# test_loss = something
-	# print("Test loss:", test_loss)
-	raise NotImplementedError("You need to write this part!")
+	accuracy = 100 * correct / total
+	print('Test accuracy: {:.2f}%'.format(accuracy))
 
 """
 7. Full model training and testing
@@ -268,4 +289,30 @@ def run_model():
 	Outputs:
 		model:	trained model
 	"""
-	raise NotImplementedError("You need to write this part!")
+	# Load hyperparameters
+	hparams = {'optimizer': 'Adam', 'lr': 0.001, 'momentum': 0.9, 'batch_size': 64, 'epochs': 10, 'transform': get_preprocess_transform('train'), 'train_loader_params': {'batch_size': 64, 'shuffle': True}, 'test_loader_params': {'batch_size': 64, 'shuffle': False}}
+
+	# Build PyTorch dataset
+	train_dataset = build_dataset(['cifar10_batches/data_batch_1', 'cifar10_batches/data_batch_2', 'cifar10_batches/data_batch_3', 'cifar10_batches/data_batch_4', 'cifar10_batches/data_batch_5'], hparams["transform"])
+	test_dataset = build_dataset(['cifar10_batches/test_batch'], hparams["transform"])
+
+	# Build PyTorch dataloader
+	train_dataloader = build_dataloader(train_dataset, hparams["train_loader_params"])
+	test_dataloader = build_dataloader(test_dataset, hparams["test_loader_params"])
+
+	# Build model
+	model = build_model()
+
+	# Build optimizer
+	optimizer = build_optimizer(hparams["optimizer"], model.parameters(), hparams)
+
+	# Build loss function
+	loss_fn = torch.nn.CrossEntropyLoss()
+
+	# Train model
+	for epoch in range(hparams["epochs"]):
+		print(f"Epoch {epoch} of {hparams['epochs']}")
+		train(train_dataloader, model, loss_fn, optimizer)
+		test(test_dataloader, model)
+
+	return model
