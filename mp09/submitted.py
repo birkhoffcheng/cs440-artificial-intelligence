@@ -38,13 +38,23 @@ class CIFAR10(Dataset):
 		Initialize your dataset here. Note that transform and target_transform
 		correspond to your data transformations for train and test respectively.
 		"""
-		raise NotImplementedError("You need to write this part!")
+		self.data = []
+		self.labels = []
+		for filename in data_files:
+			data_dict = unpickle(filename)
+			self.data.extend(data_dict[b'data'])
+			self.labels.extend(data_dict[b'labels'])
+		for i in range(len(self.data)):
+			self.data[i] = np.reshape(self.data[i], (3, 32, 32))
+			self.data[i] = np.transpose(self.data[i], (1, 2, 0))
+		self.transform = transform
+		self.target_transform = target_transform
 
 	def __len__(self):
 		"""
 		Return the length of your dataset here.
 		"""
-		raise NotImplementedError("You need to write this part!")
+		return len(self.labels)
 
 	def __getitem__(self, idx):
 		"""
@@ -56,7 +66,13 @@ class CIFAR10(Dataset):
 		Outputs:
 			y:	a tuple (image, label), although this is arbitrary so you can use whatever you would like.
 		"""
-		raise NotImplementedError("You need to write this part!")
+		img = self.data[idx]
+		label = self.labels[idx]
+		if self.transform:
+			img = self.transform(img)
+		if self.target_transform:
+			label = self.target_transform(label)
+		return img, label
 
 
 def get_preprocess_transform(mode):
@@ -66,8 +82,23 @@ def get_preprocess_transform(mode):
 	Outputs:
 		transform:	a torchvision transforms object e.g. transforms.Compose([...]) etc.
 	"""
-
-	raise NotImplementedError("You need to write this part!")
+	if mode == "train":
+		transform = transforms.Compose([
+			transforms.ToPILImage(),
+			transforms.RandomHorizontalFlip(),
+			transforms.RandomCrop(32, padding=4),
+			transforms.ToTensor(),
+			transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+		])
+	elif mode == "test":
+		transform = transforms.Compose([
+			transforms.ToPILImage(),
+			transforms.ToTensor(),
+			transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+		])
+	else:
+		raise ValueError(f"Invalid mode: {mode}")
+	return transform
 
 
 def build_dataset(data_files, transform=None):
@@ -78,7 +109,8 @@ def build_dataset(data_files, transform=None):
 	Outputs:
 		dataset:	a PyTorch dataset object to be used in training/testing
 	"""
-	raise NotImplementedError("You need to write this part!")
+	dataset = CIFAR10(data_files, transform=transform)
+	return dataset
 
 
 """
@@ -96,7 +128,8 @@ def build_dataloader(dataset, loader_params):
 	Outputs:
 		dataloader:		a PyTorch dataloader object to be used in training/testing
 	"""
-	raise NotImplementedError("You need to write this part!")
+	dataloader = DataLoader(dataset, **loader_params)
+	return dataloader
 
 
 """
