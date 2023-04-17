@@ -98,7 +98,15 @@ def update_utility(model, P, U_current):
 	Output:
 	U_next - The updated utility function, which is an M x N array
 	'''
-	raise RuntimeError("You need to write this part!")
+	M = model.M
+	N = model.N
+	U_next = np.zeros((M, N))
+	for r in range(M):
+		for c in range(N):
+			if model.T[r, c]:
+				U_next[r, c] = model.R[r, c]
+			U_next[r, c] = model.R[r, c] + model.gamma * np.max(np.sum(P[r, c] * U_current, axis=(1, 2)))
+	return U_next
 
 def value_iteration(model):
 	'''
@@ -108,7 +116,14 @@ def value_iteration(model):
 	Output:
 	U - The utility function, which is an M x N array
 	'''
-	raise RuntimeError("You need to write this part!")
+	P = compute_transition_matrix(model)
+	U = np.zeros((model.M, model.N))
+	while True:
+		U_next = update_utility(model, P, U)
+		if np.allclose(U, U_next):
+			break
+		U = U_next
+	return U
 
 if __name__ == "__main__":
 	import utils
