@@ -152,7 +152,7 @@ class q_learner():
 		@return:
 		None
 		'''
-		raise RuntimeError('You need to write this!')
+		np.savez(filename, Q=self.Q, N=self.N)
 
 	def load(self, filename):
 		'''
@@ -166,7 +166,9 @@ class q_learner():
 		@return:
 		None
 		'''
-		raise RuntimeError('You need to write this!')
+		data = np.load(filename)
+		self.Q = data['Q']
+		self.N = data['N']
 
 	def exploit(self, state):
 		'''
