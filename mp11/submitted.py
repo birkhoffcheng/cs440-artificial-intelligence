@@ -138,7 +138,7 @@ class q_learner():
 		@return:
 		None
 		'''
-		raise RuntimeError('You need to write this!')
+		self.Q[state[0], state[1], state[2], state[3], state[4], action + 1] += self.alpha * (self.q_local(reward, newstate) - self.Q[state[0], state[1], state[2], state[3], state[4], action + 1])
 
 	def save(self, filename):
 		'''
