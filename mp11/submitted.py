@@ -208,7 +208,13 @@ class q_learner():
 		0 if the paddle should be stationary
 		1 if the paddle should move downward
 		'''
-		raise RuntimeError('You need to write this!')
+		# If any action has been taken less than nfirst times, then choose one of those actions, uniformly at random.
+		unexplored_action = self.choose_unexplored_action(state)
+		if unexplored_action is not None:
+			return unexplored_action
+		if random.random() < self.epsilon:
+			return random.choice([-1, 0, 1])
+		return self.exploit(state)[0]
 
 class deep_q():
 	def __init__(self, alpha, epsilon, gamma, nfirst):
