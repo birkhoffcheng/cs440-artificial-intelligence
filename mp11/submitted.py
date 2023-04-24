@@ -80,7 +80,14 @@ class q_learner():
 		  Otherwise, choose one uniformly at random from those w/count less than n_explore.
 		  When you choose an action, you should increment its count in your counter table.
 		'''
-		raise RuntimeError('You need to write this!')
+		exploration_counts = self.report_exploration_counts(state)
+		actions = np.where(exploration_counts < self.nfirst)[0]
+		if len(actions) > 0:
+			action = random.choice(actions)
+			self.N[state[0], state[1], state[2], state[3], state[4], action] += 1
+			return action - 1
+		else:
+			return None
 
 	def report_q(self, state):
 		'''
