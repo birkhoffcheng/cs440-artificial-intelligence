@@ -185,7 +185,9 @@ class q_learner():
 		Q (scalar float):
 		  The Q-value of the selected action
 		'''
-		raise RuntimeError('You need to write this!')
+		Q = self.report_q(state)
+		action = np.argmax(Q)
+		return action - 1, Q[action]
 
 	def act(self, state):
 		'''
