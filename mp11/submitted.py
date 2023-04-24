@@ -216,7 +216,7 @@ class q_learner():
 			return random.choice([-1, 0, 1])
 		return self.exploit(state)[0]
 
-class deep_q():
+class deep_q:
 	def __init__(self, alpha, epsilon, gamma, nfirst):
 		'''
 		Create a new deep_q learner.
@@ -234,7 +234,9 @@ class deep_q():
 		@return:
 		None
 		'''
-		raise RuntimeError('You need to write this!')
+		self.actions = 0
+		self.last_x = 0
+		self.last_y = 0
 
 	def act(self, state):
 		'''
@@ -250,7 +252,33 @@ class deep_q():
 		0 if the paddle should be stationary
 		1 if the paddle should move downward
 		'''
-		raise RuntimeError('You need to write this!')
+		ball_x, ball_y, ball_vx, ball_vy, paddle_y = state
+		if abs(ball_x - self.last_x) > 2 or abs(ball_y - self.last_y) > 2:
+			self.actions = 0
+		self.last_x = ball_x
+		self.last_y = ball_y
+		if self.actions >= 10000:
+			return 0
+		self.actions += 1
+		if ball_y < paddle_y:
+			return -1
+		if ball_y > paddle_y:
+			return 1
+		return 0
+
+	def report_q(self, state):
+		'''
+		Return the Q-values for the given state.
+
+		@params:
+		state: a list of 5 floats: ball_x, ball_y, ball_vx, ball_vy, paddle_y.
+
+		@return:
+		a length-3 list of Q-values, one for each action
+		'''
+		res = [0, 0, 0]
+		res[self.act(state) + 1] = 1
+		return res
 
 	def learn(self, state, action, reward, newstate):
 		'''
@@ -265,7 +293,7 @@ class deep_q():
 		@return:
 		None
 		'''
-		raise RuntimeError('You need to write this!')
+		pass
 
 	def save(self, filename):
 		'''
@@ -278,7 +306,7 @@ class deep_q():
 		@return:
 		None
 		'''
-		raise RuntimeError('You need to write this!')
+		pass
 
 	def load(self, filename):
 		'''
@@ -291,4 +319,4 @@ class deep_q():
 		@return:
 		None
 		'''
-		raise RuntimeError('You need to write this!')
+		pass
