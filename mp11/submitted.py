@@ -103,7 +103,7 @@ class q_learner():
 		  reward plus expected future utility of each of the three actions.
 		  The mapping from actions to integers is up to you, but there must be three of them.
 		'''
-		raise RuntimeError('You need to write this!')
+		return self.Q[state[0], state[1], state[2], state[3], state[4]]
 
 	def q_local(self, reward, newstate):
 		'''
@@ -120,7 +120,7 @@ class q_learner():
 		@return:
 		Q_local (scalar float): the local value of Q
 		'''
-		raise RuntimeError('You need to write this!')
+		return reward + self.gamma * np.max(self.report_q(newstate))
 
 	def learn(self, state, action, reward, newstate):
 		'''
