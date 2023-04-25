@@ -1,4 +1,3 @@
 gradescope-utils>=0.2.7
 numpy>=1.15
 pygame
-torch

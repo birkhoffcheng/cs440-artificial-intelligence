@@ -7,8 +7,6 @@ function's docstring.
 '''
 import random
 import numpy as np
-import torch
-import torch.nn as nn
 
 class q_learner():
 	def __init__(self, alpha, epsilon, gamma, nfirst, state_cardinality):
@@ -253,7 +251,7 @@ class deep_q:
 		1 if the paddle should move downward
 		'''
 		ball_x, ball_y, ball_vx, ball_vy, paddle_y = state
-		if abs(ball_x - self.last_x) > 2 or abs(ball_y - self.last_y) > 2:
+		if abs(ball_x - self.last_x) > abs(ball_vx) + 1 or abs(ball_y - self.last_y) > abs(ball_vy) + 1:
 			self.actions = 0
 		self.last_x = ball_x
 		self.last_y = ball_y
@@ -276,9 +274,7 @@ class deep_q:
 		@return:
 		a length-3 list of Q-values, one for each action
 		'''
-		res = [0, 0, 0]
-		res[self.act(state) + 1] = 1
-		return res
+		return [0, 0, 0]
 
 	def learn(self, state, action, reward, newstate):
 		'''
